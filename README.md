@@ -187,7 +187,7 @@ chmod +x disk_check.sh backup.sh
 
 ## 📸 Screenshot Index
 
-Save screenshots in the `screenshots/` folder next to the README that references them, using the names below. **Blur or crop** anything sensitive: recovery keys, public IPs, real usernames, license keys, personal emails.
+Saved screenshots in the `screenshots/` folder next to the README that references them, using the names below. **Blur or crop** anything sensitive: recovery keys, public IPs, real usernames, license keys, personal emails.
 
 | # | File | What to capture | Folder |
 |---|------|-----------------|--------|
