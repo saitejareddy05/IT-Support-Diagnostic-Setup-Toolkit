@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IT Support Diagnostic &amp; Setup Toolkit</title>
+<style>
+  :root{
+    --paper:#EEF1EF;
+    --paper-panel:#FFFFFF;
+    --ink:#182229;
+    --ink-soft:#4C5A63;
+    --rule:#C7D0CC;
+    --rule-soft:#DDE3E0;
+    --accent:#2F6F5E;
+    --accent-soft:#DCEAE4;
+    --amber:#B4791F;
+    --amber-soft:#F3E6D0;
+    --mono: "SFMono-Regular", "Consolas", "Liberation Mono", Menlo, Courier, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#12181B;
+      --paper-panel:#182126;
+      --ink:#E7EDEA;
+      --ink-soft:#9FB0A9;
+      --rule:#33403E;
+      --rule-soft:#28312E;
+      --accent:#6FC7AC;
+      --accent-soft:#1D3A32;
+      --amber:#E3A94A;
+      --amber-soft:#3A2E17;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#12181B; --paper-panel:#182126; --ink:#E7EDEA; --ink-soft:#9FB0A9;
+    --rule:#33403E; --rule-soft:#28312E; --accent:#6FC7AC; --accent-soft:#1D3A32;
+    --amber:#E3A94A; --amber-soft:#3A2E17;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{ color:var(--accent); }
+
+  .header{
+    border-bottom:1px solid var(--rule);
+    padding: 28px 24px 22px;
+    background: var(--paper);
+    position:relative;
+  }
+  .header-inner{ max-width:1080px; margin:0 auto; }
+  .kicker{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .dot{ width:7px;height:7px;border-radius:50%; background:var(--accent); flex:none; }
+  h1{
+    font-size:clamp(26px, 4vw, 38px);
+    line-height:1.15;
+    margin:0 0 10px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    color:var(--ink-soft);
+    font-size:15.5px;
+    line-height:1.55;
+    max-width:640px;
+    margin:0 0 18px;
+  }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:10px 22px;
+    font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+  }
+  .meta-row b{ color:var(--ink); font-weight:600; }
+
+  .layout{
+    max-width:1080px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns: 240px 1fr;
+    gap:0;
+    min-height:60vh;
+  }
+  @media (max-width: 780px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  nav.rail{
+    border-right:1px solid var(--rule);
+    padding:22px 14px 40px;
+  }
+  @media (max-width:780px){ nav.rail{ border-right:none; border-bottom:1px solid var(--rule); padding-bottom:18px; } }
+
+  .rail-group{ margin-bottom:22px; }
+  .rail-group h3{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin:0 0 8px 10px;
+    font-weight:600;
+  }
+  .rail-btn{
+    display:block; width:100%; text-align:left;
+    background:none; border:none; cursor:pointer;
+    font-family:var(--mono); font-size:13px; color:var(--ink);
+    padding:7px 10px; border-radius:6px;
+    line-height:1.3;
+  }
+  .rail-btn:hover{ background:var(--rule-soft); }
+  .rail-btn.active{ background:var(--accent-soft); color:var(--accent); font-weight:600; }
+
+  main{ padding:26px 24px 60px; min-width:0; }
+
+  .part-card{
+    border:1px solid var(--rule);
+    border-radius:10px;
+    background:var(--paper-panel);
+    padding:18px 20px;
+    margin-bottom:16px;
+  }
+  .part-card h2{
+    margin:0 0 6px;
+    font-size:16px;
+    display:flex; align-items:baseline; gap:10px;
+  }
+  .part-num{
+    font-family:var(--mono); color:var(--accent); font-size:13px; font-weight:600;
+  }
+  .part-card p{ margin:0 0 12px; color:var(--ink-soft); font-size:13.5px; line-height:1.55; }
+  .file-row{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:8px 10px;
+    border-radius:6px;
+    font-family:var(--mono); font-size:12.8px;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .file-row:hover{ background:var(--rule-soft); }
+  .file-row.active{ background:var(--accent-soft); border-color:var(--accent); }
+  .file-row .name{ color:var(--ink); }
+  .file-row .go{ color:var(--ink-soft); font-size:11.5px; }
+
+  .viewer{
+    border:1px solid var(--rule);
+    border-radius:10px;
+    background:var(--paper-panel);
+    overflow:hidden;
+  }
+  .viewer-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px;
+    padding:11px 16px;
+    border-bottom:1px solid var(--rule);
+    font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+    flex-wrap:wrap;
+  }
+  .viewer-bar .path{ color:var(--ink); }
+  .viewer-bar a.raw{ font-size:11.5px; }
+  pre.code{
+    margin:0; padding:18px 20px; overflow:auto;
+    font-family:var(--mono); font-size:12.6px; line-height:1.6;
+    max-height:70vh; white-space:pre; tab-size:2;
+  }
+  .empty-state{
+    padding:40px 20px; text-align:center; color:var(--ink-soft);
+    font-family:var(--mono); font-size:13px;
+  }
+
+  footer{
+    border-top:1px solid var(--rule);
+    padding:18px 24px 30px;
+    text-align:center;
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-soft);
+  }
+
+  ::selection{ background:var(--amber-soft); }
+  button:focus-visible, .rail-btn:focus-visible, .file-row:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="kicker"><span class="dot"></span>SCENARIO &mdash; NEW IT SUPPORT HIRE</div>
+    <h1>IT Support Diagnostic &amp; Setup Toolkit</h1>
+    <p class="lede">
+      A hands-on toolkit for diagnosing, provisioning and networking a Windows
+      machine, with a Linux health-check companion &mdash; built to be run by hand,
+      not trusted blind. Browse the scripts and notes below, or read them
+      straight from the repo.
+    </p>
+    <div class="meta-row">
+      <span><b>7</b> parts</span>
+      <span><b id="count-win">&mdash;</b> PowerShell scripts</span>
+      <span><b id="count-lin">&mdash;</b> Bash scripts</span>
+      <span><b id="count-notes">&mdash;</b> exercise notes</span>
+      <span><a href="README.md">Full README &rarr;</a></span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="rail" id="rail" aria-label="Toolkit files"></nav>
+  <main>
+    <section class="part-card">
+      <h2><span class="part-num">01</span> System diagnostic (Windows)</h2>
+      <p>OS/edition/license, disk space, file system per drive, boot mode (UEFI vs Legacy), installed apps, network config, top 10 processes, then DISM/SFC/CHKDSK.</p>
+      <div id="files-p1"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">02</span> New employee onboarding (Windows)</h2>
+      <p>Standard user creation, practice-disk partitioning, Windows Update pause, System Restore, theme via Settings vs registry, security verification.</p>
+      <div id="files-p2"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">03</span> Networking setup (Windows)</h2>
+      <p>Static IP, firewall port blocking, network discovery, folder sharing, drive/printer mapping, RDP vs SSH vs remote tools, Workgroup vs Domain.</p>
+      <div id="files-p3"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">04</span> Linux health check (WSL)</h2>
+      <p>Disk usage + largest files, tar.gz backups, hourly cron job, file organizing, permissions (chmod 750), user administration, networking commands, htop.</p>
+      <div id="files-p4"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">05</span> Application lifecycle (Windows)</h2>
+      <p>Silent install/uninstall with a leftover check, minimum-spec comparison against Part 1's report, restricting an app's folder access.</p>
+      <div id="files-p5"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">06</span> Cloud productivity tools</h2>
+      <p>Sync conflict resolution, view-only vs edit sharing, Storage-as-a-Service vs Software-as-a-Service &mdash; a fill-in observation exercise.</p>
+      <div id="files-p6"></div>
+    </section>
+    <section class="part-card">
+      <h2><span class="part-num">07</span> Deliverable</h2>
+      <p>This page plus the top-level README tie every part together.</p>
+      <div class="file-row" data-path="README.md" role="button" tabindex="0">
+        <span class="name">README.md</span><span class="go">view &rarr;</span>
+      </div>
+    </section>
+
+    <div class="viewer" id="viewer" aria-live="polite">
+      <div class="empty-state">Select a file on the left to view its contents here.</div>
+    </div>
+  </main>
+</div>
+
+<footer>IT Support Diagnostic &amp; Setup Toolkit &mdash; static viewer, no server required</footer>
+
+<script>
+(function(){
+  var DATA = {
+    "windows-scripts": {
+      label: "Windows scripts",
+      files: ["_Common.ps1","SysDiag.ps1","Run-SysDiag.bat",
+              "P2-NewUser.ps1","P2-PartitionTestDisk.ps1","P2-UpdatePause.ps1","P2-RestorePoint.ps1","P2-Theme.ps1","P2-SecurityCheck.ps1",
+              "P3-StaticIP.ps1","P3-FirewallTest.ps1","P3-NetworkDiscovery.ps1","P3-ShareFolder.ps1","P3-MapDriveAndPrinter.ps1","P3-WorkgroupInfo.ps1",
+              "P5-SilentInstall.ps1","P5-AppMinSpecs.ps1","P5-RestrictedApp.ps1"]
+    },
+    "linux-scripts": {
+      label: "Linux scripts",
+      files: ["disk-check.sh","backup.sh","setup-cron.sh","file-org-practice.sh","permissions-practice.sh","user-admin-practice.sh","network-check.sh","install-htop.sh"]
+    },
+    "networking-notes": {
+      label: "Notes",
+      files: ["RDP-vs-RemoteTools.md","Firewall-and-Discovery-Notes.md","Cloud-Tools-Notes.md"]
+    }
+  };
+
+  var PARTS = {
+    "files-p1": [["windows-scripts","SysDiag.ps1"],["windows-scripts","_Common.ps1"],["windows-scripts","Run-SysDiag.bat"]],
+    "files-p2": [["windows-scripts","P2-NewUser.ps1"],["windows-scripts","P2-PartitionTestDisk.ps1"],["windows-scripts","P2-UpdatePause.ps1"],
+                 ["windows-scripts","P2-RestorePoint.ps1"],["windows-scripts","P2-Theme.ps1"],["windows-scripts","P2-SecurityCheck.ps1"]],
+    "files-p3": [["windows-scripts","P3-StaticIP.ps1"],["windows-scripts","P3-FirewallTest.ps1"],["windows-scripts","P3-NetworkDiscovery.ps1"],
+                 ["windows-scripts","P3-ShareFolder.ps1"],["windows-scripts","P3-MapDriveAndPrinter.ps1"],["windows-scripts","P3-WorkgroupInfo.ps1"],
+                 ["networking-notes","RDP-vs-RemoteTools.md"],["networking-notes","Firewall-and-Discovery-Notes.md"]],
+    "files-p4": [["linux-scripts","disk-check.sh"],["linux-scripts","backup.sh"],["linux-scripts","setup-cron.sh"],
+                 ["linux-scripts","file-org-practice.sh"],["linux-scripts","permissions-practice.sh"],
+                 ["linux-scripts","user-admin-practice.sh"],["linux-scripts","network-check.sh"],["linux-scripts","install-htop.sh"]],
+    "files-p5": [["windows-scripts","P5-SilentInstall.ps1"],["windows-scripts","P5-AppMinSpecs.ps1"],["windows-scripts","P5-RestrictedApp.ps1"]],
+    "files-p6": [["networking-notes","Cloud-Tools-Notes.md"]]
+  };
+
+  function el(tag, attrs, text){
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function fileRow(folder, name){
+    var row = el('div', {class:'file-row', role:'button', tabindex:'0', 'data-folder':folder, 'data-name':name});
+    row.appendChild(el('span', {class:'name'}, name));
+    row.appendChild(el('span', {class:'go'}, 'view \u2192'));
+    row.addEventListener('click', function(){ loadFile(folder, name, row); });
+    row.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); loadFile(folder, name, row); } });
+    return row;
+  }
+
+  // Build the part sections
+  Object.keys(PARTS).forEach(function(sectionId){
+    var host = document.getElementById(sectionId);
+    PARTS[sectionId].forEach(function(pair){ host.appendChild(fileRow(pair[0], pair[1])); });
+  });
+
+  // Build the left rail, grouped by folder
+  var rail = document.getElementById('rail');
+  Object.keys(DATA).forEach(function(folder){
+    var group = el('div', {class:'rail-group'});
+    group.appendChild(el('h3', null, DATA[folder].label));
+    DATA[folder].files.forEach(function(name){
+      var btn = el('button', {class:'rail-btn', 'data-folder':folder, 'data-name':name}, name);
+      btn.addEventListener('click', function(){ loadFile(folder, name, btn); });
+      group.appendChild(btn);
+    });
+    rail.appendChild(group);
+  });
+  rail.appendChild((function(){
+    var group = el('div', {class:'rail-group'});
+    group.appendChild(el('h3', null, 'Deliverable'));
+    var btn = el('button', {class:'rail-btn', 'data-folder':'', 'data-name':'README.md'}, 'README.md');
+    btn.addEventListener('click', function(){ loadFile('', 'README.md', btn); });
+    group.appendChild(btn);
+    return group;
+  })());
+
+  document.getElementById('count-win').textContent = DATA['windows-scripts'].files.length;
+  document.getElementById('count-lin').textContent = DATA['linux-scripts'].files.length;
+  document.getElementById('count-notes').textContent = DATA['networking-notes'].files.length + 1;
+
+  var viewer = document.getElementById('viewer');
+  var activeEls = [];
+
+  function setActive(el){
+    activeEls.forEach(function(e){ e.classList.remove('active'); });
+    activeEls = [];
+    document.querySelectorAll('[data-folder="' + (el.getAttribute('data-folder')||'') + '"][data-name="' + el.getAttribute('data-name') + '"]')
+      .forEach(function(e){ e.classList.add('active'); activeEls.push(e); });
+  }
+
+  function loadFile(folder, name, triggerEl){
+    var path = folder ? (folder + '/' + name) : name;
+    if (triggerEl) setActive(triggerEl);
+    viewer.innerHTML = '';
+    var bar = el('div', {class:'viewer-bar'});
+    bar.appendChild(el('span', {class:'path'}, path));
+    var raw = el('a', {class:'raw', href:path, target:'_blank', rel:'noopener'}, 'open raw \u2197');
+    bar.appendChild(raw);
+    viewer.appendChild(bar);
+    var pre = el('pre', {class:'code'}, 'Loading\u2026');
+    viewer.appendChild(pre);
+
+    fetch(path).then(function(res){
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.text();
+    }).then(function(text){
+      pre.textContent = text;
+    }).catch(function(err){
+      pre.textContent = 'Could not load ' + path + ' (' + err.message + ').\n' +
+        'If you are viewing this file directly from disk (file://) rather than through\n' +
+        'a deployed site or a local server, the browser blocks this fetch.\n' +
+        'Run a local server instead, e.g.:  python -m http.server\nthen open http://localhost:8000/';
+    });
+
+    viewer.scrollIntoView({block:'nearest'});
+  }
+})();
+</script>
+
+</body>
+</html>
